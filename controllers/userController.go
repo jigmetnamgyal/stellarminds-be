@@ -10,19 +10,5 @@ func SignUp(c *gin.Context) {
 }
 
 func LogIn(c *gin.Context) {
-	user, err := services.FindUserByEmail(c)
-
-	if err != nil {
-		return
-	}
-
-	//passwordError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
-	//
-	//if passwordError != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{
-	//		"error": "Incorrect Password!",
-	//	})
-	//}
-
-	//c.JSON(http.StatusOK, user)
+	services.LoginWithCredentials(c)
 }

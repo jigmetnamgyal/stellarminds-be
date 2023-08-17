@@ -5,12 +5,15 @@ import (
 	"github.com/Stellar-Lab/stellarminds-be/initializer"
 	"github.com/Stellar-Lab/stellarminds-be/models"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
+	"time"
 )
 
-func FindUserByEmail(c *gin.Context) (*models.User, error) {
+func LoginWithCredentials(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -30,14 +33,14 @@ func FindUserByEmail(c *gin.Context) (*models.User, error) {
 					"error": "Email doesn't exist!",
 				})
 
-				return nil, dbError
+				return
 			}
 
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"Error": "Database Error: " + dbError.Error(),
 			})
 
-			return nil, dbError
+			return
 		}
 	}
 
@@ -48,8 +51,36 @@ func FindUserByEmail(c *gin.Context) (*models.User, error) {
 			"error": "Password is Incorrect!",
 		})
 
-		return nil, err
+		return
 	}
 
-	return &user, nil
+	// Generate JWT token. Set the exp date to 30 days.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	// Sign and get the encoded token as a string using a jwt secret defined in .env
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to generate JWT token",
+		})
+
+		return
+	}
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(
+		"Authorization",
+		tokenString,
+		3600*24*30,
+		"",
+		"",
+		false,
+		true,
+	)
+
+	c.JSON(http.StatusOK, user)
 }

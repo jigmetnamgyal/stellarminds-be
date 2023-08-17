@@ -1,9 +1,12 @@
 package services
 
 import (
+	"errors"
 	"github.com/Stellar-Lab/stellarminds-be/initializer"
 	"github.com/Stellar-Lab/stellarminds-be/models"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -21,7 +24,31 @@ func FindUserByEmail(c *gin.Context) (*models.User, error) {
 
 	var user models.User
 	if dbError := initializer.DB.First(&user, "email = ?", body.Email).Error; dbError != nil {
-		return nil, dbError
+		if dbError != nil {
+			if errors.Is(dbError, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": "Email doesn't exist!",
+				})
+
+				return nil, dbError
+			}
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"Error": "Database Error: " + dbError.Error(),
+			})
+
+			return nil, dbError
+		}
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Password is Incorrect!",
+		})
+
+		return nil, err
 	}
 
 	return &user, nil

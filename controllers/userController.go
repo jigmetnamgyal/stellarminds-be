@@ -1,6 +1,7 @@
-package initializer
+package controllers
 
 import (
+	"github.com/Stellar-Lab/stellarminds-be/initializer"
 	"github.com/Stellar-Lab/stellarminds-be/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -15,9 +16,9 @@ func SignUp(c *gin.Context) {
 		AgreeToTerms    bool
 	}
 
-	if err := c.ShouldBindJSON(&body); err != nil {
+	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
+			"error": "Failed to read request body",
 		})
 
 		return
@@ -25,15 +26,17 @@ func SignUp(c *gin.Context) {
 
 	if body.Password != body.ConfirmPassword {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Password doesn't match",
+			"error": "Confirm password doesn't match your password",
 		})
+
+		return
 	}
 
-	hash, hashPasswordError := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	hash, hashError := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 
-	if hashPasswordError != nil {
+	if hashError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Error while hashing the password",
+			"error": "Failed to hash password",
 		})
 
 		return
@@ -46,11 +49,11 @@ func SignUp(c *gin.Context) {
 		AgreeToTerms:    body.AgreeToTerms,
 	}
 
-	result := DB.Create(&user)
+	result := initializer.DB.Create(&user)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user",
+			"error": "Failed to create User",
 		})
 
 		return

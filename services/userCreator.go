@@ -4,21 +4,27 @@ import (
 	"github.com/Stellar-Lab/stellarminds-be/initializer"
 	"github.com/Stellar-Lab/stellarminds-be/models"
 	"github.com/gin-gonic/gin"
+	validator2 "github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
 func UserCreator(c *gin.Context) {
-	var body struct {
-		Email           string `json:"email"`
-		Password        string `json:"password"`
-		ConfirmPassword string `json:"confirm_password"`
-		AgreeToTerms    bool   `json:"agree_to_terms"`
-	}
+	var body models.User
 
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read request body",
+		})
+
+		return
+	}
+
+	validate := validator2.New()
+
+	if validationError := validate.Struct(body); validationError != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Email is not valid",
 		})
 
 		return

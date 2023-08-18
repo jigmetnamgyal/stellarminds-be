@@ -12,9 +12,17 @@ func init() {
 }
 
 func main() {
+	initializer.DB.Model(&models.User{}).Association("Profile")
+
 	err := initializer.DB.AutoMigrate(&models.User{})
 
 	if err != nil {
-		log.Fatal("Error migrating")
+		log.Fatal("Error migrating User")
+	}
+
+	profileMigrationError := initializer.DB.AutoMigrate(&models.Profile{})
+
+	if profileMigrationError != nil {
+		log.Fatal("Error migrating profile")
 	}
 }

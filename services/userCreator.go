@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/Stellar-Lab/stellarminds-be/initializer"
 	"github.com/Stellar-Lab/stellarminds-be/models"
+	"github.com/Stellar-Lab/stellarminds-be/services/helpers"
 	"github.com/gin-gonic/gin"
 	validator2 "github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +15,18 @@ func UserCreator(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read request body",
+			"error": "Failed to read request body for user" + err.Error(),
+		})
+
+		return
+	}
+
+	var gender models.GenderEnum
+	gender = body.Profile.Gender
+
+	if !helpers.ValidGender(gender) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid Gender!",
 		})
 
 		return
@@ -24,7 +36,7 @@ func UserCreator(c *gin.Context) {
 
 	if validationError := validate.Struct(body); validationError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Email is not valid",
+			"error": "Email is not valid" + validationError.Error(),
 		})
 
 		return
@@ -53,13 +65,19 @@ func UserCreator(c *gin.Context) {
 		Password:        string(hash),
 		ConfirmPassword: string(hash),
 		AgreeToTerms:    body.AgreeToTerms,
+		Profile: models.Profile{
+			Name:        body.Profile.Name,
+			DateOfBirth: body.Profile.DateOfBirth,
+			Gender:      body.Profile.Gender,
+			AvatarUrl:   body.Profile.AvatarUrl,
+		},
 	}
 
 	result := initializer.DB.Create(&user)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create User",
+			"error": "Failed to create User" + result.Error.Error(),
 		})
 
 		return

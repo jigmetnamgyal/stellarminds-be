@@ -30,7 +30,7 @@ func LoginWithCredentials(c *gin.Context) {
 		if dbError != nil {
 			if errors.Is(dbError, gorm.ErrRecordNotFound) {
 				c.JSON(http.StatusNotFound, gin.H{
-					"error": "Email doesn't exist!",
+					"error": "Email doesn't exist!: " + dbError.Error(),
 				})
 
 				return

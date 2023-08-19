@@ -10,13 +10,14 @@ type GenderEnum string
 const (
 	GenderMale   GenderEnum = "male"
 	GenderFemale GenderEnum = "female"
+	GenderOther  GenderEnum = "others"
 )
 
 type Profile struct {
 	gorm.Model
-	UserId      uint       `json:"user_id" binding:"required"`
-	Name        string     `gorm:"unique; not null" json:"name"  binding:"required"`
-	DateOfBirth time.Time  `gorm:"not null" json:"date_of_birth"  binding:"required"`
-	Gender      GenderEnum `gorm:"not null" json:"gender" binding:"required"`
-	AvatarUrl   string     `gorm:"not null" json:"avatar_url" binding:"required"`
+	UserId      uint       `json:"-"`
+	Name        string     `gorm:"not null" json:"name"`
+	DateOfBirth time.Time  `gorm:"not null" json:"date_of_birth"`
+	Gender      GenderEnum `gorm:"not null" json:"gender"`
+	AvatarUrl   string     `gorm:"not null" json:"avatar_url"`
 }

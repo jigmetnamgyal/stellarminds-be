@@ -36,7 +36,7 @@ func UserCreator(c *gin.Context) {
 
 	if validationError := validate.Struct(body); validationError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Email is not valid",
+			"error": "Email is not valid" + validationError.Error(),
 		})
 
 		return
@@ -77,7 +77,7 @@ func UserCreator(c *gin.Context) {
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create User",
+			"error": "Failed to create User" + result.Error.Error(),
 		})
 
 		return

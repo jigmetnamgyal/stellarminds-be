@@ -19,3 +19,7 @@ func Validate(c *gin.Context) {
 		"message": "I am logged in!",
 	})
 }
+
+func Show(c *gin.Context) {
+	services.FindUser(c)
+}

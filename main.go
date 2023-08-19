@@ -19,6 +19,7 @@ func main() {
 	r.POST("/login", controllers.LogIn)
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	r.GET("user/:id", middleware.RequireAuth, controllers.Show)
+	r.GET("users", middleware.RequireAuth, controllers.Index)
 
 	r.Run()
 }

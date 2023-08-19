@@ -23,3 +23,7 @@ func Validate(c *gin.Context) {
 func Show(c *gin.Context) {
 	services.FindUser(c)
 }
+
+func Index(c *gin.Context) {
+	services.QueryAllUsers(c)
+}

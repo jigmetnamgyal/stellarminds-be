@@ -11,7 +11,7 @@ import (
 )
 
 func FindUser(c *gin.Context) {
-	userId := c.Query("id")
+	userId := c.Param("id")
 	fmt.Println(userId)
 
 	var user models.User
@@ -21,14 +21,14 @@ func FindUser(c *gin.Context) {
 				"error": "User with id: " + userId + " is not found",
 			})
 
-			c.AbortWithStatus(http.StatusNotFound)
+			return
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 
-		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	c.JSON(http.StatusOK, user)

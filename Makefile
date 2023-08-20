@@ -16,4 +16,4 @@ build-go-image:
 	docker build -t stellarminds:$(RELEASE_TAG) .
 
 server-docker:
-	docker run --name stellarminds-be -p 3000:3000 stellarminds:$(RELEASE_TAG)
+	docker run --name stellarminds --network stellarminds-network -p 3000:3000 -e GIN_MODE=release stellarminds:$(RELEASE_TAG)

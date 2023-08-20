@@ -1,0 +1,19 @@
+version: "1.0"
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=jtn
+      - POSTGRES_PASSWORD=jtn11
+      - POSTGRES_DB=stellarminds
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=host=postgres user=jtn password=jtn11 dbname=jtn port=5432 sslmode=disable
+      - JWT_SECRET=StellarMinds11/11/11@!!!abcjssstj
+    depends_on:
+      - postgres

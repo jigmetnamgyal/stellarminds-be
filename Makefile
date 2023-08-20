@@ -14,3 +14,6 @@ postgres:
 
 build-go-image:
 	docker build -t stellarminds:$(RELEASE_TAG) .
+
+server-docker:
+	docker run --name stellarminds-be -p 3000:3000 stellarminds:$(RELEASE_TAG)

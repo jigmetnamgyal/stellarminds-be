@@ -1,7 +1,7 @@
 start-dev:
 	go run main.go
 
-migrate:
+migrate-db:
 	go run migrate/migrate.go
 
 postgres-instance:

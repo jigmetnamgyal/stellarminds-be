@@ -26,7 +26,7 @@ func LoginWithCredentials(c *gin.Context) {
 	}
 
 	var user models.User
-	if dbError := initializer.DB.First(&user, "email = ?", body.Email).Error; dbError != nil {
+	if dbError := initializer.DB.Preload("Profile").First(&user, "email = ?", body.Email).Error; dbError != nil {
 		if dbError != nil {
 			if errors.Is(dbError, gorm.ErrRecordNotFound) {
 				c.JSON(http.StatusNotFound, gin.H{

@@ -14,6 +14,10 @@ func LogIn(c *gin.Context) {
 	services.LoginWithCredentials(c)
 }
 
+func LogOut(c *gin.Context) {
+	services.LogoutUser(c)
+}
+
 func Validate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "I am logged in!",

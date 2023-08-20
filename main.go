@@ -17,6 +17,7 @@ func main() {
 
 	r.POST("/signup", controllers.SignUp)
 	r.POST("/login", controllers.LogIn)
+	r.POST("/log-out", controllers.LogOut)
 
 	r.Group("users")
 	{

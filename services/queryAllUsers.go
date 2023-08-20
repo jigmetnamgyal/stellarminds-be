@@ -9,7 +9,7 @@ import (
 
 func QueryAllUsers(c *gin.Context) {
 	var users []models.User
-	result := initializer.DB.Find(&users)
+	result := initializer.DB.Preload("Profile").Find(&users)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

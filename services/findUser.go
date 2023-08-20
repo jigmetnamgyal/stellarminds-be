@@ -15,7 +15,7 @@ func FindUser(c *gin.Context) {
 	fmt.Println(userId)
 
 	var user models.User
-	if err := initializer.DB.First(&user, userId).Error; err != nil {
+	if err := initializer.DB.Preload("Profile").First(&user, userId).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "User with id: " + userId + " is not found",

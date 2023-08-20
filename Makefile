@@ -1,3 +1,5 @@
+RELEASE_TAG = latest
+
 start-dev:
 	go run main.go
 
@@ -9,3 +11,6 @@ postgres-instance:
 
 postgres:
 	docker exec -it postgres15 psql -U jtn
+
+build-go-image:
+	docker build -t stellarminds:$(RELEASE_TAG) .
